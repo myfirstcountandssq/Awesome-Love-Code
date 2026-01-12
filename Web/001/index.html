@@ -1,30 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
-    <title>小孙同学</title>
+    <title>小孙同学 - 心跳告白</title>
     <meta name="language" content="zh-CN">
     <meta name="title" content="小孙同学">
     <meta name="github" content="https://github.com/sun0225SUN/Awesome-Love-Code">
     <meta name="describe" content="收集不易，您的star是我坚持的动力，同时也欢迎各位PR哦! ">
     <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
+    <link href="https://fonts.googleapis.com/css2?family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
     <style>
         * {
             padding: 0;
             margin: 0;
+            box-sizing: border-box;
+            user-select: none;
         }
 
         body {
-            background-color: pink;
-
+            background-color: #ffe6f2;
+            font-family: 'Love Ya Like A Sister', cursive, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         #frame {
             position: relative;
             width: 400px;
             height: 300px;
-            margin: 250px auto;
+            margin: 100px auto 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        #frame:hover {
+            transform: scale(1.05);
+        }
+
+        .heart {
+            position: absolute;
+            box-shadow: 0 0 40px #d5093c;
+            background: linear-gradient(-90deg, #F50A45 0%, #d5093c 40%);
         }
 
         .left,
@@ -37,7 +58,6 @@
 
         .left {
             left: 35px;
-
         }
 
         .right {
@@ -52,14 +72,11 @@
             height: 200px;
             transform: rotate(45deg);
             z-index: -1;
-
         }
 
-        .heart {
-            position: absolute;
-            box-shadow: 0 0 40px #d5093c;
-            animation: beat .4s ease infinite normal;
-            background: linear-gradient(-90deg, #F50A45 0%, #d5093c 40%);
+        /* 心跳动画 */
+        .beat-animation {
+            animation: beat 0.4s ease infinite normal;
         }
 
         @keyframes beat {
@@ -76,45 +93,477 @@
             100% {
                 transform: scale(1) rotate(225deg);
                 box-shadow: 0 0 40px #d5093c;
-                ;
             }
         }
 
         .word {
-            position: absolute;
-            width: 50%;
-            top: 75%;
-            left: 25%;
+            position: relative;
+            width: 80%;
+            max-width: 600px;
             text-align: center;
-            transform: translateY(-50%);
             font-family: 'Love Ya Like A Sister', cursive;
             font-size: 40px;
             color: #c70012;
-            padding: 0 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .word.clicked {
+            color: #ff3366;
+            font-size: 42px;
+            text-shadow: 0 0 15px rgba(255, 51, 102, 0.7);
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            background: linear-gradient(to bottom, #ff6699, #ff3366);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Love Ya Like A Sister', cursive;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(to bottom, #ff3366, #cc0044);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .control-btn:active {
+            transform: translateY(1px);
+        }
+
+        .control-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .info-panel {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            text-align: center;
+        }
+
+        .info-panel.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-panel h3 {
+            color: #ff3366;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .info-panel p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .click-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: #ff3366;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+
+        .message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 51, 102, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #ff6699;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            #frame {
+                width: 300px;
+                height: 225px;
+                margin: 80px auto 30px;
+            }
+
+            .left, .right {
+                width: 150px;
+                height: 150px;
+            }
+
+            .left {
+                left: 25px;
+            }
+
+            .right {
+                right: 25px;
+            }
+
+            .bottom {
+                bottom: 27px;
+                left: 75px;
+                width: 150px;
+                height: 150px;
+            }
+
+            .word {
+                font-size: 30px;
+                padding: 10px;
+            }
+
+            .word.clicked {
+                font-size: 32px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .control-btn {
+                width: 200px;
+            }
+
+            .click-counter {
+                top: 10px;
+                right: 10px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 
 <body>
-
+    <div class="click-counter" id="clickCounter">点击次数: 0</div>
+    
     <div id="frame">
-        <div class="heart left"></div>
-        <div class="heart right"></div>
-        <div class="heart bottom"></div>
+        <div class="heart left beat-animation"></div>
+        <div class="heart right beat-animation"></div>
+        <div class="heart bottom beat-animation"></div>
     </div>
 
-    <b class="word">每次遇见你都心跳加速!</b>
+    <div class="word" id="messageText">每次遇见你都心跳加速!</div>
 
-    <audio autoplay="autopaly" loop="loop" id="audios" preload="auto">
-        <source src="http://music.163.com/song/media/outer/url?id=526464145.mp3" />
+    <div class="controls">
+        <button class="control-btn" id="toggleMusic">暂停音乐</button>
+        <button class="control-btn" id="toggleAnimation">暂停心跳</button>
+        <button class="control-btn" id="changeColor">更换颜色</button>
+        <button class="control-btn" id="showInfo">关于项目</button>
+    </div>
+
+    <div class="info-panel" id="infoPanel">
+        <h3>关于这个项目</h3>
+               <p>这是一个使用纯HTML、CSS和JavaScript创建的心跳动画效果。</p>
+        <p>点击心形可以改变提示文字，点击按钮可以控制音乐和动画。</p>
+        <p>GitHub项目地址: <a href="https://github.com/sun0225SUN/Awesome-Love-Code" target="_blank">Awesome-Love-Code</a></p>
+        <p>收集不易，您的star是我坚持的动力，同时也欢迎各位PR哦!</p>
+        <button class="control-btn" id="closeInfo" style="margin-top: 15px;">关闭</button>
+    </div>
+
+    <div class="message" id="toastMessage"></div>
+
+    <div class="footer">
+        Made with ❤️ by 小孙同学 | 点击心形有惊喜哦!
+    </div>
+
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="http://music.163.com/song/media/outer/url?id=526464145.mp3" type="audio/mpeg">
+        您的浏览器不支持音频元素。
     </audio>
 
+    <canvas id="canvas"></canvas>
+
     <script>
-        var b = document.body;
-        var c = document.getElementsByTagName('canvas')[0];
-        var a = c.getContext('2d');
-        document.body.clientWidth;
-        with (m = Math) C = cos, S = sin, P = pow, R = random; c.width = c.height = f = 600; h = -250; function p(a, b, c) { if (c > 60) return [S(a * 7) * (13 + 5 / (.2 + P(b * 4, 4))) - S(b) * 50, b * f + 50, 625 + C(a * 7) * (13 + 5 / (.2 + P(b * 4, 4))) + b * 400, a * 1 - b / 2, a]; A = a * 2 - 1; B = b * 2 - 1; if (A * A + B * B < 1) { if (c > 37) { n = (j = c & 1) ? 6 : 4; o = .5 / (a + .01) + C(b * 125) * 3 - a * 300; w = b * h; return [o * C(n) + w * S(n) + j * 610 - 390, o * S(n) - w * C(n) + 550 - j * 350, 1180 + C(B + A) * 99 - j * 300, .4 - a * .1 + P(1 - B * B, -h * 6) * .15 - a * b * .4 + C(a + b) / 5 + P(C((o * (a + 1) + (B > 0 ? w : -w)) / 25), 30) * .1 * (1 - B * B), o / 1e3 + .7 - o * w * 3e-6] } if (c > 32) { c = c * 1.16 - .15; o = a * 45 - 20; w = b * b * h; z = o * S(c) + w * C(c) + 620; return [o * C(c) - w * S(c), 28 + C(B * .5) * 99 - b * b * b * 60 - z / 2 - h, z, (b * b * .3 + P((1 - (A * A)), 7) * .15 + .3) * b, b * .7] } o = A * (2 - b) * (80 - c * 2); w = 99 - C(A) * 120 - C(b) * (-h - c * 4.9) + C(P(1 - b, 7)) * 50 + c * 2; z = o * S(c) + w * C(c) + 700; return [o * C(c) - w * S(c), B * 99 - C(P(b, 7)) * 50 - c / 3 - z / 1.35 + 450, z, (1 - b / 1.2) * .9 + a * .1, P((1 - b), 20) / 4 + .05] } } setInterval('for(i=0;i<1e4;i++)if(s=p(R(),R(),i%46/.74)){z=s[2];x=~~(s[0]*f/z-h);y=~~(s[1]*f/z-h);if(!m[q=y*f+x]|m[q]>z)m[q]=z,a.fillStyle="rgb("+~(s[3]*h)+","+~(s[4]*h)+","+~(s[3]*s[3]*-80)+")",a.fillRect(x,y,1,1)}', 0)
+        // 元素获取
+        const frame = document.getElementById('frame');
+        const hearts = document.querySelectorAll('.heart');
+        const messageText = document.getElementById('messageText');
+        const toggleMusicBtn = document.getElementById('toggleMusic');
+        const toggleAnimationBtn = document.getElementById('toggleAnimation');
+        const changeColorBtn = document.getElementById('changeColor');
+        const showInfoBtn = document.getElementById('showInfo');
+        const closeInfoBtn = document.getElementById('closeInfo');
+        const infoPanel = document.getElementById('infoPanel');
+        const clickCounter = document.getElementById('clickCounter');
+        const toastMessage = document.getElementById('toastMessage');
+        const music = document.getElementById('backgroundMusic');
+        const canvas = document.getElementById('canvas');
+        
+        // 状态变量
+        let clickCount = 0;
+        let musicPlaying = true;
+        let animationPlaying = true;
+        let currentColorIndex = 0;
+        let heartColors = [
+            {primary: '#F50A45', secondary: '#d5093c', shadow: '#d5093c'}, // 原色
+            {primary: '#FF6B9D', secondary: '#FF4081', shadow: '#FF4081'}, // 粉色
+            {primary: '#FF3366', secondary: '#CC0044', shadow: '#CC0044'}, // 深粉色
+            {primary: '#FF9933', secondary: '#FF6600', shadow: '#FF6600'}, // 橙色
+            {primary: '#FF3366', secondary: '#CC0066', shadow: '#CC0066'}, // 紫红色
+            {primary: '#FF6699', secondary: '#FF3366', shadow: '#FF3366'}, // 亮粉色
+        ];
+        
+        // 消息列表
+        const messages = [
+            "每次遇见你都心跳加速!",
+            "你是我心跳的理由 ❤️",
+            "我的世界因你而完整",
+            "你让我的心跳不停",
+            "爱你是我最美的决定",
+            "与你相遇，三生有幸",
+            "你是我此生最美的风景",
+            "心跳为你，一生一世",
+            "你的微笑让我心跳漏拍",
+            "爱你，从心跳开始"
+        ];
+        
+        // 初始化点击计数器
+        updateClickCounter();
+        
+        // 心形点击事件
+        frame.addEventListener('click', function() {
+            clickCount++;
+            updateClickCounter();
+            
+            // 随机选择一条消息
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            messageText.textContent = messages[randomIndex];
+            
+            // 添加点击效果
+            messageText.classList.add('clicked');
+            frame.style.transform = 'scale(1.1)';
+            
+            // 心形跳动效果
+            hearts.forEach(heart => {
+                heart.style.animation = 'none';
+                setTimeout(() => {
+                    if (animationPlaying) {
+                        heart.style.animation = 'beat 0.4s ease infinite normal';
+                    }
+                }, 10);
+            });
+            
+            // 显示点击反馈
+            showToast('❤️ 心跳加速中...');
+            
+            // 移除效果
+            setTimeout(() => {
+                messageText.classList.remove('clicked');
+                frame.style.transform = '';
+            }, 1000);
+        });
+        
+        // 音乐控制
+        toggleMusicBtn.addEventListener('click', function() {
+            if (musicPlaying) {
+                music.pause();
+                toggleMusicBtn.textContent = '播放音乐';
+                showToast('音乐已暂停');
+            } else {
+                music.play();
+                toggleMusicBtn.textContent = '暂停音乐';
+                showToast('音乐已播放');
+            }
+            musicPlaying = !musicPlaying;
+        });
+        
+        // 动画控制
+        toggleAnimationBtn.addEventListener('click', function() {
+            if (animationPlaying) {
+                hearts.forEach(heart => {
+                    heart.style.animation = 'none';
+                });
+                toggleAnimationBtn.textContent = '恢复心跳';
+                showToast('心跳已暂停');
+            } else {
+                hearts.forEach(heart => {
+                    heart.style.animation = 'beat 0.4s ease infinite normal';
+                });
+                toggleAnimationBtn.textContent = '暂停心跳';
+                showToast('心跳已恢复');
+            }
+            animationPlaying = !animationPlaying;
+        });
+        
+        // 颜色切换
+        changeColorBtn.addEventListener('click', function() {
+            currentColorIndex = (currentColorIndex + 1) % heartColors.length;
+            const color = heartColors[currentColorIndex];
+            
+            hearts.forEach(heart => {
+                heart.style.background = `linear-gradient(-90deg, ${color.primary} 0%, ${color.secondary} 40%)`;
+                heart.style.boxShadow = `0 0 40px ${color.shadow}`;
+            });
+            
+            // 更新动画中的颜色
+            const styleSheet = document.styleSheets[0];
+            const rules = styleSheet.cssRules || styleSheet.rules;
+            
+            for (let i = 0; i < rules.length; i++) {
+                if (rules[i].name === 'beat') {
+                    rules[i].deleteRule('0%');
+                    rules[i].appendRule(`0% { transform: scale(1) rotate(225deg); box-shadow: 0 0 40px ${color.shadow}; }`);
+                    
+                    rules[i].deleteRule('50%');
+                    rules[i].appendRule(`50% { transform: scale(1.1) rotate(225deg); box-shadow: 0 0 70px ${color.shadow}; }`);
+                    
+                    rules[i].deleteRule('100%');
+                    rules[i].appendRule(`100% { transform: scale(1) rotate(225deg); box-shadow: 0 0 40px ${color.shadow}; }`);
+                    break;
+                }
+            }
+            
+            showToast(`已切换为 ${currentColorIndex + 1} 号配色`);
+        });
+        
+        // 信息面板
+        showInfoBtn.addEventListener('click', function() {
+            infoPanel.classList.add('active');
+        });
+        
+        closeInfoBtn.addEventListener('click', function() {
+            infoPanel.classList.remove('active');
+        });
+        
+        // 点击外部关闭信息面板
+        document.addEventListener('click', function(event) {
+            if (!infoPanel.contains(event.target) && event.target !== showInfoBtn) {
+                infoPanel.classList.remove('active');
+            }
+        });
+        
+        // 工具函数
+        function updateClickCounter() {
+            clickCounter.textContent = `点击次数: ${clickCount}`;
+        }
+        
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toastMessage.classList.add('show');
+            
+            setTimeout(() => {
+                toastMessage.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 背景粒子效果 (原代码优化)
+        window.onload = function() {
+            const b = document.body;
+            const c = canvas;
+            const a = c.getContext('2d');
+            document.body.clientWidth;
+            
+            with (m = Math) C = cos, S = sin, P = pow, R = random; 
+            c.width = c.height = f = 600; 
+            h = -250; 
+            
+            function p(a, b, c) { 
+                if (c > 60) return [S(a * 7) * (13 + 5 / (.2 + P(b * 4, 4))) - S(b) * 50, b * f + 50, 625 + C(a * 7) * (13 + 5 / (.2 + P(b * 4, 4))) + b * 400, a * 1 - b / 2, a]; 
+                A = a * 2 - 1; 
+                B = b * 2 - 1; 
+                if (A * A + B * B < 1) { 
+                    if (c > 37) { 
+                        n = (j = c & 1) ? 6 : 4; 
+                        o = .5 / (a + .01) + C(b * 125) * 3 - a * 300; 
+                        w = b * h; 
+                        return [o * C(n) + w * S(n) + j * 610 - 390, o * S(n) - w * C(n) + 550 - j * 350, 1180 + C(B + A) * 99 - j * 300, .4 - a * .1 + P(1 - B * B, -h * 6) * .15 - a * b * .4 + C(a + b) / 5 + P(C((o * (a + 1) + (B > 0 ? w : -w)) / 25), 30) * .1 * (1 - B * B), o / 1e3 + .7 - o * w * 3e-6] 
+                    } 
+                    if (c > 32) { 
+                        c = c * 1.16 - .15; 
+                        o = a * 45 - 20; 
+                        w = b * b * h; 
+                        z = o * S(c) + w * C(c) + 620; 
+                        return [o * C(c) - w * S(c), 28 + C(B * .5) * 99 - b * b * b * 60 - z / 2 - h, z, (b * b * .3 + P((1 - (A * A)), 7) * .15 + .3) * b, b * .7] 
+                    } 
+                    o = A * (2 - b) * (80 - c * 2); 
+                    w = 99 - C(A) * 120 - C(b) * (-h - c * 4.9) + C(P(1 - b, 7)) * 50 + c * 2; 
+                    z = o * S(c) + w * C(c) + 700; 
+                    return [o * C(c) - w * S(c), B * 99 - C(P(b, 7)) * 50 - c / 3 - z / 1.35 + 450, z, (1 - b / 1.2) * .9 + a * .1, P((1 - b), 20) / 4 + .05] 
+                } 
+            } 
+            
+            setInterval(function() {
+                for(i = 0; i < 1e4; i++) {
+                    if(s = p(R(), R(), i % 46 / .74)) {
+                        z = s[2];
+                        x = ~~(s[0] * f / z - h);
+                        y = ~~(s[1] * f / z - h);
+                        if(!m[q = y * f + x] || m[q] > z) {
+                            m[q] = z;
+                            a.fillStyle = "rgba(" + ~~(s[3] * h) + "," + ~~(s[4] * h) + "," + ~~(s[3] * s[3] * -80) + ",0.7)";
+                            a.fillRect(x, y, 1, 1);
+                        }
+                    }
+                }
+            }, 0);
+            
+            // 调整画布大小
+            function resizeCanvas() {
+                c.width = window.innerWidth;
+                c.height = window.innerHeight;
+                f = Math.min(c.width, c.height);
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+        };
     </script>
 </body>
 
